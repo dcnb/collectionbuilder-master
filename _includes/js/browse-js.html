@@ -1,9 +1,32 @@
+{%- assign items = site.data[site.data.theme.metadata] -%}
+{%- assign fields = site.data.browse-config -%}
 <script src="{{ '/js/jquery.lazyload.js' | prepend: site.digital-assets }}"></script>
 <script>
 (function(){ 
   /* lazy load images */
   var $imgs = $("img.lazyload");
   $imgs.lazyload();
+  // add items
+  var items = [
+    {% for i in items %}
+    { {% for f in fields %}"{{ f.field }}":{{ i[f.field] | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %} }{% unless forloop.last %},{% endunless %}{% endfor %}
+  ];
+  
+  //var all = items.map(function (item) { return Object.values(obj).join(" ").toLowerCase(); });
+
+  var filteredItems = items.filter(function (obj) { return Object.values(obj).join(" ").toLowerCase().includes(query);});
+  function filterItems(arr) {
+    var all
+    v.includes("query");
+
+  
+  };
+/* 
+filtered = items.map( add all together).filter( contains("query");
+filtered.length = of items 
+for i in filtered, add card
+*/
+
 
   /* set up browse filter function */
   function filterItems() {
