@@ -1,56 +1,37 @@
-{%- assign items = site.data[site.data.theme.metadata] -%}
-{%- assign fields = site.data.browse-config -%}
 <script src="{{ '/js/jquery.lazyload.js' | prepend: site.digital-assets }}"></script>
 <script>
-//(function(){ 
-
-  function addCard(obj) {
-    var card = '<div class="item col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-2" > <div class="card">';
-    if(obj.format.includes('image')){ 
-      card += '<a href="{% include item-link.html %}"> <img class="card-img-top lazyload" data-original="{% include image/medium.html %}" alt="Image of "></a>';
-    }
-    card += '<div class="card-body text-center search"> <h3 class="card-title"><a href="{% include item-link.html %}" class="text-dark">' + obj.title + '</a></h3>';
-    card += '<p class="card-text">' + '<strong>Date:</strong>' + obj.date + '</p>';
-    card += '<p class="card-text">' 
-      {% for f in fields %}+ '<strong>{{ f.display-name-or-btn }}:</strong> ' + obj.{{ f.display-name-or-btn }} {% unless forloop.last %}+ '<br>'{% endunless %}{% endfor %}
-      + '</p>';
-    card += '<p> <a href="{% include item-link.html %}" class="btn btn-clearwater" title="link to ">View Item</a></p>';
-    card += '</div></div></div>';
-    $("#browseItems").append(card); 
-  };
+(function(){ 
   /* lazy load images */
   var $imgs = $("img.lazyload");
   $imgs.lazyload();
-  /* add items */
-  var items = [
-    {% for i in items %}
-    { {% for f in fields %}"{{ f.field }}":{{ i[f.field] | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %} }{% unless forloop.last %},{% endunless %}{% endfor %}
-  ];
-  
-  //var all = items.map(function (item) { return Object.values(obj).join(" ").toLowerCase(); });
-  var query;
-  
-  function filterItems(arr,q) {
-    var filteredItems = arr.filter(function (obj) { return Object.values(obj).join(" ").toLowerCase().includes(q);});
-    $("#browseItems").empty();
-    $("#numberOf").html(filteredItems.length);
-    // add stuff
-    for (var i = 0, len = filteredItems.length; i < len; i++) {
-      addCard(filteredItems[i]);
+
+  /* set up browse filter function */
+  function filterItems() {
+    var input, filter, table, tr, td, i;
+    input = document.getElementById("quickSearch");
+    filter = input.value.toUpperCase();
+    itemcontainer = document.getElementById("browseItems");
+    item = itemcontainer.getElementsByClassName("item");
+    for (i = 0; i < item.length; i++) {
+      itemcontents = item[i].getElementsByClassName("search")[0];
+      if (itemcontents) {
+        if (itemcontents.innerText.toUpperCase().indexOf(filter) > -1) {
+          item[i].style.display = "";
+        } else {
+          item[i].style.display = "none";
+        }
+      }       
     }
-    // finish
+    var numberofint = $('div.card:visible').length;
+    $("#numberOf").html(numberofint);
     $imgs.lazyload();
     $("#goButton").focus();
-  };
-
-  /* filter if hash in initial URL */
+  }
+  /* filter if hash in initial URL */ 
+  var hashfilter = decodeURIComponent(location.hash.substr(1));
   if(window.location.hash) {
-    query = decodeURIComponent(location.hash.substr(1));
-    $('#quickSearch').val(query);
-    filterItems(items,query);
-  } else {
-    query = "";
-    filterItems(items,query);
+    $('#quickSearch').val(hashfilter);
+    filterItems();
   }
   /* add hash if search button clicked */ 
   $('#goButton').click( function() {
@@ -64,10 +45,10 @@
   });
   /* filter if hash changes */ 
   $(window).on("hashchange", function() {
-    query = decodeURIComponent(location.hash.substr(1));
-    $('#quickSearch').val(query);
-    filterItems(items,query);
+    var hashfilter = decodeURIComponent(location.hash.substr(1));
+    $('#quickSearch').val(hashfilter);
+    filterItems();
   });
 
-//})();
+})();
 </script>

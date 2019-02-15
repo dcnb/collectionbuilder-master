@@ -1,0 +1,81 @@
+{%- assign items = site.data[site.data.theme.metadata] -%}
+{%- assign fields = site.data.browse-js-config -%}
+<script src="{{ '/js/jquery.lazyload.js' | prepend: site.digital-assets }}"></script>
+<script>
+//(function(){ 
+
+  function addCard(obj) {
+    var card = '<div class="item col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-2" > <div class="card">';
+    /*if(obj.format.includes('image')){ 
+      card += '<a href="{% include item-link.html %}"> <img class="card-img-top lazyload" data-original="{% include image/medium.html %}" alt="Image of "></a>';
+    }*/
+    card += '<div class="card-body text-center search"> <h3 class="card-title"><a href="{% include item-link.html %}" class="text-dark">' + obj.title + '</a></h3>';
+    card += '<p class="card-text">' + '<strong>Date:</strong>' + obj.date + '</p>';
+    card += '<p class="card-text">' 
+      {% for f in fields %}+ '<strong>{{ f.display-name-or-btn }}:</strong> ' + obj.{{ f.display-name-or-btn }} {% unless forloop.last %}+ '<br>'{% endunless %}{% endfor %}
+      + '</p>';
+    card += '<p> <a href="{% include item-link.html %}" class="btn btn-clearwater" title="link to ">View Item</a></p>';
+    card += '</div></div></div>';
+    $("#browseItems").append(card); 
+  };
+  /* lazy load images */
+  var $imgs = $("img.lazyload");
+  $imgs.lazyload();
+  /* add items */
+  var items = [
+    {% for i in items %}
+    { {% for f in fields %}"{{ f.field }}":{{ i[f.field] | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %} }{% unless forloop.last %},{% endunless %}{% endfor %}
+  ];
+  
+  //var all = items.map(function (item) { return Object.values(obj).join(" ").toLowerCase(); });
+  var query;
+  
+  function filterItems(arr,q) {
+    // empty first, add loading icon
+    
+    // js filter
+    //var filteredItems = arr.filter(function (obj) { return Object.values(obj).join(" ").toLowerCase().includes(q);});
+    // jquery grep
+    var filteredItems = jQuery.grep(arr, function(obj) { return Object.values(obj).join(" ").toLowerCase().includes(q);});
+    // loop
+    //var filteredItems;
+    
+    $("#browseItems").empty();
+    $("#numberOf").html(filteredItems.length);
+    // add stuff
+    for (var i = 0, len = filteredItems.length; i < len; i++) {
+      addCard(filteredItems[i]);
+    }
+    // finish
+    $imgs.lazyload();
+    $("#goButton").focus();
+  };
+
+  /* filter if hash in initial URL */
+  if(window.location.hash) {
+    query = decodeURIComponent(location.hash.substr(1));
+    $('#quickSearch').val(query);
+    filterItems(items,query);
+  } else {
+    query = "";
+    filterItems(items,query);
+  }
+  /* add hash if search button clicked */ 
+  $('#goButton').click( function() {
+    window.location.hash = encodeURIComponent($('#quickSearch').val());
+  });
+  /* add hash if if enter is pressed */
+  $('#quickSearch').keypress(function(e){
+    if(e.which == 13){
+        window.location.hash = encodeURIComponent($('#quickSearch').val());
+      }
+  });
+  /* filter if hash changes */ 
+  $(window).on("hashchange", function() {
+    query = decodeURIComponent(location.hash.substr(1));
+    $('#quickSearch').val(query);
+    filterItems(items,query);
+  });
+
+//})();
+</script>

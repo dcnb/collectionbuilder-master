@@ -1,6 +1,4 @@
 field,display-name-or-btn
-title,title
-subject,subject
-location,location
-description,description
-format,format
+subject,btn
+location,btn
+description,
