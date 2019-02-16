@@ -1,6 +1,7 @@
 ---
 layout: page 
 ---
+{% assign itemCount = site.data[site.data.theme.metadata] | size %}
 
 {{ content }}
 
@@ -13,10 +14,12 @@ layout: page
                 <a class="btn btn-outline-secondary filter" href="#" data-filter="">Reset</a>    
             </div>
         </div>
-        <span class="info2 h2"><span id="numberOf"></span> of {{ site.data[site.data.theme.metadata] | size }} items</span>
+        <span class="info2 h2"><span id="numberOf">{{ itemCount }}</span> of {{ itemCount }} items</span>
     </div>
 </div>
-
+<div id="loading" class="text-center">
+    <div class="spinner-border text-secondary" role="status"><span class="sr-only">Loading...</span></div>
+</div>
 <div class="row" id="browseItems">
     
 </div>
