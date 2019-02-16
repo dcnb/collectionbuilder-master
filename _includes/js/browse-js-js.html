@@ -105,6 +105,7 @@
     $("#loading").show();
     // read hash
     query = decodeURIComponent(location.hash.substr(1));
+    $('#quickSearch').val(query);
     // filter
     filterItems(items,query);
   });
