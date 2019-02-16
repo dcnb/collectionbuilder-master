@@ -1,6 +1,5 @@
 field,display-name-or-btn
-title,title
-subject,subject
-location,location
-description,description
-format,format
+ccc-camp-number,Camp
+ccc-company-number,Company
+subject,Subject
+description,Description

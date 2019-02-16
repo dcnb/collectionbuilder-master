@@ -7,9 +7,9 @@ metadata: cccidaho # check against cdm-collection-id below -- this should be use
 
 # repository variables (leave blank if self-contained)
 # url for our CDM server
-cdm-url: https://cdm17254.contentdm.oclc.org
+cdm-url: https://digital.lib.uidaho.edu
 # contentdm collection name 
-cdm-collection-id: boxing 
+cdm-collection-id: cccidaho 
 
 # header and head metadata
 tagline: Photographs of University of Idaho Boxers and Boxing Teams, 1934 - 1953
