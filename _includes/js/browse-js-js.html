@@ -13,15 +13,46 @@
     // title
     card += '<div class="card-body text-center search"> <h3 class="card-title"><a href="{{ '/items/' | relative_url }}' + obj.id + '.html" class="text-dark">' + obj.title + '</a></h3>';
     // date
-    card += '<p class="card-text">' + '<strong>Date:</strong> ' + obj.date + '</p>';
+    if(obj.date){
+      card += '<p class="card-text mb-0">' + '<strong>Date:</strong> ' + obj.date + '</p>';
+    }
+    // media type
+    {% if site.data.theme.mediatypes contains ';' %}
+    card += '<p class="card-text"><small>Type: <a href="{{ '/browse-js.html' | relative_url }}#' + encodeURIComponent(obj.format) + '">' + 
+      obj.format.split("/").pop().toUpperCase() + ' <span class="';
+    if(obj.format.includes('image')){
+      card += 'far fa-image';
+    } else if(obj.format.includes('audio')){
+      card += 'far fa-file-audio';
+    } else if(obj.format.includes('video')){
+      card += 'far fa-file-video';
+    } else {
+      card += 'far fa-file';
+    }
+    card += '"></span></a></small></p>';
+    {% endif %}
     // thumb for non-photo items
     if(!obj.format.includes('image')){
       card += '<p><a target="_blank" href="{{ '/items/' | relative_url }}' + obj.id + '.html"><img class="thumb lazyload" data-original="{{ site.data.theme.cdm-url }}/utils/getthumbnail/collection/{{ site.data.theme.cdm-collection-id }}/id/' + obj.cdm + '" alt="item thumbnail"></a></p>';
     }
     // other fields
-    card += '<p class="card-text">' 
-      {% for f in fields %}+ '<strong>{{ f.display-name-or-btn }}:</strong> ' + obj.{{ f.field | replace: "-","" }} {% unless forloop.last %}+ '<br>'{% endunless %}{% endfor %}
-      + '</p>';
+    card += '<p class="card-text">';
+    {% for f in fields %}{% unless f.hidden == 'true' %}
+    if(obj.{{ f.field | replace: "-","" }}){
+    {% if f.displayName %}card += '<strong>{{ f.displayName }}:</strong> ';{% endif %}
+    {% if f.btn == 'true' %}
+    var btns = obj.{{ f.field | replace: "-","" }}.split(";");
+    for (var i = 0, len = btns.length; i < len; i++) {
+      card += '<a class="btn btn-sm btn-secondary m-1 text-wrap" href="{{ '/browse-js.html' | relative_url }}#' + encodeURIComponent(btns[i]) + '">' + btns[i] + '</a>';
+    }
+    {% else %}
+    card += obj.{{ f.field | replace: "-","" }};
+    {% endif %}
+    {% unless forloop.last %}card += '<br>';{% endunless %}
+    }
+    {% endunless %}{% endfor %}
+    card += '</p>';
+
     // view button
     card += '<p> <a href="{{ '/items/' | relative_url }}' + obj.id + '.html" class="btn btn-clearwater" title="link to ">View Item</a></p>';
     // close divs
@@ -33,7 +64,7 @@
   /* add items */
   var items = [
     {% for i in items %}
-    { "id":{{ i["object-id"] | jsonify }}, "title":{{ i["title"] | jsonify }}, "format":{{ i["format"] | jsonify }}, {% if i["date"] %}"date":{{ i["date"] | jsonify }},{% endif %} {% for f in fields %}{% if i[f.field] %}"{{ f.field | replace: "-","" }}":{{ i[f.field] | jsonify }},{% endif %}{% endfor %} "cdm":{{ i["cdm-id"] | jsonify }} }{% unless forloop.last %},{% endunless %}{% endfor %}
+    { "id":{{ i["object-id"] | jsonify }}, "title":{{ i["title"] | strip | jsonify }}, "format":{{ i["format"] | jsonify }}, {% if i["date"] %}"date":{{ i["date"] | jsonify }},{% endif %} {% for f in fields %}{% if i[f.field] %}"{{ f.field | replace: "-","" }}":{{ i[f.field] | strip | jsonify }},{% endif %}{% endfor %} "cdm":{{ i["cdm-id"] | jsonify }} }{% unless forloop.last %},{% endunless %}{% endfor %}
   ];
 
   function filterItems(arr,q) {
@@ -41,25 +72,26 @@
     if (q=="") { 
       var filteredItems = arr; 
     } else {
+      q = q.toUpperCase(); 
       // 3 filter options, filter, grep, loop
 
       // js filter
       /*
-      var filteredItems = arr.filter(function (obj) { return Object.values(obj).join(" ").toLowerCase().includes(q);}); */
+      var filteredItems = arr.filter(function (obj) { return Object.values(obj).join(" ").toUpperCase().includes(q);}); */
       
       // jquery grep
       /*
       if(q==""){ var filteredItems = arr; } else {
-        var filteredItems = jQuery.grep(arr, function(obj) { return Object.values(obj).join(" ").toLowerCase().includes(q);});
+        var filteredItems = jQuery.grep(arr, function(obj) { return Object.values(obj).join(" ").toUpperCase().includes(q);});
       }*/
-      
+      // (/keyword/i).test(source)
       // js loop
       var filteredItems = [];
       for (var i = 0, len = arr.length; i < len; i++) {
-        if(Object.values(arr[i]).join(" ").toLowerCase().includes(q)){
+        if(Object.values(arr[i]).join(" ").toUpperCase().includes(q)){
           filteredItems.push(arr[i]);
         }
-      }
+      } 
     }
     // add number 
     $("#numberOf").html(filteredItems.length);

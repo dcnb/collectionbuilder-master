@@ -1,5 +1,7 @@
-field,display-name-or-btn
-ccc-camp-number,Camp
-ccc-company-number,Company
-subject,Subject
-description,Description
+field,displayName,btn,hidden
+ccc-camp-number,Camp #,true
+ccc-company-number,Company #,true
+subject,,true
+location,,true
+description,
+contentdm-file-name,,,true
