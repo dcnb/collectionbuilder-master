@@ -2,7 +2,7 @@
 {%- assign fields = site.data.browse-js-config -%}
 <script src="{{ '/js/jquery.lazyload.js' | prepend: site.digital-assets }}"></script>
 <script>
-(function(){ 
+//(function(){ 
 
   function makeCard(obj) {
     var card = '<div class="item col-lg-4 col-md-6 col-sm-12 mb-2" > <div class="card">';
@@ -86,12 +86,22 @@
       }*/
       // (/keyword/i).test(source)
       // js loop
+      /*
       var filteredItems = [];
       for (var i = 0, len = arr.length; i < len; i++) {
         if(Object.values(arr[i]).join(" ").toUpperCase().includes(q)){
           filteredItems.push(arr[i]);
         }
-      } 
+      }*/
+      // for compatible indexOf loop?
+      var filteredItems = [];
+      for (var i = 0, len = arr.length; i < len; i++) {
+        var val = "";
+        for (var k in arr[i]) { val += arr[i][k]; }
+        if(val.toUpperCase().indexOf(q) != -1){
+          filteredItems.push(arr[i]);
+        }
+      }
     }
     // add number 
     $("#numberOf").html(filteredItems.length);
@@ -142,5 +152,5 @@
     filterItems(items,query);
   });
 
-})();
+//})();
 </script>
