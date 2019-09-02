@@ -1,4 +1,4 @@
-# Jekyll Digital Collection Generator
+# CollectionBuilder
 
 # Note: use environment variable on build command to include analytics
 # JEKYLL_ENV=production jekyll build

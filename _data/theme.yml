@@ -1,4 +1,7 @@
-# Jekyll Digital Collection Generator
+# CollectionBuilder
+
+CollectionBuilder_type: sa # [options: sa = Stand Alone | cdm = contentdm | gh = Github Pages]
+
 
 # Site settings
 title: Donald R. Theophilus Boxing Photograph Collection
